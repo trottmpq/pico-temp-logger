@@ -1,0 +1,34 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"cmake.environment": {
+        	"PICO_SDK_PATH": "~/Development/pico-sdk",
+			"PICO_PLATFORM": "rp2040"
+    	},
+    	"cmake.generator": "Unix Makefiles",
+		"cmake.configureOnOpen": false,
+		"cmake.statusbar.advanced": {
+		  "debug" : {
+			"visibility": "hidden"
+					},    "launch" : {
+			"visibility": "hidden"
+					 },
+		  "build" : {
+			"visibility": "hidden"
+					 },
+		  "buildTarget" : {
+			"visibility": "hidden"
+					 },
+		   },
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-vscode.cmake-tools",
+			"ms-vscode.cpptools"
+		]
+	}
+}
