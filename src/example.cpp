@@ -60,41 +60,61 @@ int main() {
     gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
     gpio_pull_up(PICO_DEFAULT_I2C_SCL_PIN);
 
-    // This example will use SPI0 at 0.5MHz.
-    spi_init(spi0, 500 * 1000);
-    gpio_set_function(PICO_DEFAULT_SPI_RX_PIN, GPIO_FUNC_SPI);
-    gpio_set_function(PICO_DEFAULT_SPI_SCK_PIN, GPIO_FUNC_SPI);
-    gpio_set_function(PICO_DEFAULT_SPI_TX_PIN, GPIO_FUNC_SPI);
-    // Make the SPI pins available to picotool
-    bi_decl(bi_3pins_with_func(PICO_DEFAULT_SPI_RX_PIN, PICO_DEFAULT_SPI_TX_PIN, PICO_DEFAULT_SPI_SCK_PIN, GPIO_FUNC_SPI));
-
     // Chip select is active-low, so we'll initialise it to a driven-high state
     gpio_init(PICO_DEFAULT_SPI_CSN_PIN);
     gpio_set_dir(PICO_DEFAULT_SPI_CSN_PIN, GPIO_OUT);
     gpio_put(PICO_DEFAULT_SPI_CSN_PIN, 1);
-    // Make the CS pin available to picotool
-    bi_decl(bi_1pin_with_name(PICO_DEFAULT_SPI_CSN_PIN, "SPI CS"));
+
+    // This example will use SPI0 at 0.5MHz.
+    spi_init(spi0, 500 * 1000);
+
+    gpio_set_function(PICO_DEFAULT_SPI_RX_PIN, GPIO_FUNC_SPI);
+    gpio_set_function(PICO_DEFAULT_SPI_SCK_PIN, GPIO_FUNC_SPI);
+    gpio_set_function(PICO_DEFAULT_SPI_TX_PIN, GPIO_FUNC_SPI);
+    // Make the SPI pins available to picotool
+    // bi_decl(bi_3pins_with_func(PICO_DEFAULT_SPI_RX_PIN, PICO_DEFAULT_SPI_TX_PIN, PICO_DEFAULT_SPI_SCK_PIN, GPIO_FUNC_SPI));
+
+
+    // // Make the CS pin available to picotool
+    // bi_decl(bi_1pin_with_name(PICO_DEFAULT_SPI_CSN_PIN, "SPI CS"));
 
     GFX oled(0x3C, size::W128xH32, i2c0);   //Declare oled instance
-    // MAX31865 temp(spi0);
+
+    oled.clear(colors::BLACK);
+
+    MAX31865 temp(spi0);
+
+    uint8_t addr = 0x00;
+    uint8_t ret = 0;
+    addr &= 0x7F; // make sure top bit is not set
+
+    read_registers(0x00, &ret, 1);
+
+    uint8_t buffer[2] = {0x80, 0xD1};
+    cs_select();
+    spi_write_blocking(spi0, buffer, 2);
+    cs_deselect();
+
+    uint8_t ret2 =0;
+    read_registers(0x00, &ret2, 1);
 
     // temp.begin(MAX31865_3WIRE);
     // temp.setWires(MAX31865_3WIRE);
-    // Set 3 Wire
-    write_register(0x80, 0xD1);
+    // temp.readRTD();
+    // // Set 3 Wire
+    // write_register(0x80, 0xD1);
    
-    uint8_t buffer;
+    // uint8_t buffer;
 
-    read_registers(0x00, &buffer, 1);
-
+    // read_registers(0x00, &buffer, 1);
 
     while(true) 
     {
         sleep_ms(1000);
-        temperature = buffer;
+        // temperature = buffer;
         // temperature = temp.temperature(100, 430);
-        // temperature = rand() % 100 + 1;
-        oled.clear();                       //Clear buffer
+        temperature = rand() % 100 + 1;
+        oled.clear(colors::BLACK);
         oled.drawString(0, 0, "Pico Temp Logger");
         oled.drawHorizontalLine(0,9,oled.getWidth());
         oled.drawString(0, 11, "Temperature :");

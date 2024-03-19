@@ -2,7 +2,10 @@
 #include "MAX31865.hpp"
 #include "hardware/spi.h"
 #include <stdlib.h>
+#include "pico/stdlib.h"
 #include <cmath>
+#include "pico/binary_info.h"
+
 
 /**************************************************************************/
 /*!
